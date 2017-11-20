@@ -1,0 +1,17 @@
+{"tableName":"BATCH_JOB_EXECUTION"}
+{"tableName":"BATCH_JOB_EXECUTION_CONTEXT"}
+{"tableName":"BATCH_JOB_EXECUTION_PARAMS"}
+{"tableName":"BATCH_JOB_EXECUTION_SEQ"}
+{"tableName":"BATCH_JOB_INSTANCE"}
+{"tableName":"BATCH_JOB_SEQ"}
+{"tableName":"BATCH_STEP_EXECUTION"}
+{"tableName":"BATCH_STEP_EXECUTION_CONTEXT"}
+{"tableName":"BATCH_STEP_EXECUTION_SEQ"}
+{"tableName":"current_dept_emp"}
+{"tableName":"departments"}
+{"tableName":"dept_emp"}
+{"tableName":"dept_emp_latest_date"}
+{"tableName":"dept_manager"}
+{"tableName":"employees"}
+{"tableName":"salaries"}
+{"tableName":"titles"}
