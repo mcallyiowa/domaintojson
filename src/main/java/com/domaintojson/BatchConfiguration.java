@@ -71,7 +71,13 @@ public class BatchConfiguration {
                 SqlRowSet rowSet = jdbcTemplate.queryForRowSet("DESC " + line);
                 SqlTable sqlTable = new SqlTable(line);
                 while(rowSet.next()) {
-                    sqlTable.add(rowSet.getString("Field"));
+                    SqlColumn sqlColumn = new SqlColumn();
+                    sqlColumn.setColumnName(rowSet.getString("Field"));
+                    sqlColumn.setColumnType(rowSet.getString("Type"));
+                    if(rowSet.getString("Key") != null && rowSet.getString("Key").equals("PRI")) {
+                        sqlColumn.setPrimaryKey(true);
+                    }
+                    sqlTable.add(sqlColumn);
                 }
                 return sqlTable;
             }
@@ -96,7 +102,7 @@ public class BatchConfiguration {
     @Bean
     public ItemWriter<String> writer() {
         FlatFileItemWriter<String> writer = new FlatFileItemWriter<String>();
-        writer.setResource(new FileSystemResource(new File("target/out-json.txt")));
+        writer.setResource(new FileSystemResource(new File("target/out-json.json")));
         writer.setLineAggregator(new PassThroughLineAggregator<String>());
         return writer;
     }
