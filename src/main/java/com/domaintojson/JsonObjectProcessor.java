@@ -1,6 +1,7 @@
 package com.domaintojson;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
@@ -11,7 +12,7 @@ public class JsonObjectProcessor implements ItemProcessor<SqlTable, String> {
 
     @Override
     public String process(final SqlTable sqlTable) throws Exception {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         final String transformedObject = gson.toJson(sqlTable);
         log.info("Translating to json object + " + transformedObject);
         return transformedObject;

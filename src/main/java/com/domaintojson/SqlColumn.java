@@ -31,13 +31,4 @@ public class SqlColumn {
 
     private boolean isPrimaryKey;
 
-    public boolean isForeignKey() {
-        return isForeignKey;
-    }
-
-    public void setForeignKey(boolean foreignKey) {
-        isForeignKey = foreignKey;
-    }
-
-    private boolean isForeignKey;
 }

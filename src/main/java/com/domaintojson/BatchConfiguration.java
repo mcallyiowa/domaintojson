@@ -15,6 +15,8 @@ import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.LineMapper;
+import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
+import org.springframework.batch.item.file.transform.LineAggregator;
 import org.springframework.batch.item.file.transform.PassThroughLineAggregator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +27,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -41,7 +45,7 @@ public class BatchConfiguration {
     public DataSource dataSource;
 
     private static final Logger log = LoggerFactory.getLogger(BatchConfiguration.class);
-
+    private boolean firstItem = true;
 
     @Bean
     JdbcCursorItemReader<String> getTableNamesReader() {
@@ -100,14 +104,25 @@ public class BatchConfiguration {
         return writer;
     }
     @Bean
-    public ItemWriter<String> writer() {
+    public ItemWriter<String> writer() throws IOException {
         FlatFileItemWriter<String> writer = new FlatFileItemWriter<String>();
+        writer.setHeaderCallback(new JsonFlatFileHeaderCallback());
+        writer.setFooterCallback(new JsonFlatFileFooterCallback());
         writer.setResource(new FileSystemResource(new File("target/out-json.json")));
-        writer.setLineAggregator(new PassThroughLineAggregator<String>());
+        writer.setLineAggregator(new LineAggregator<String>() {
+            @Override
+            public String aggregate(String item) {
+                if(firstItem) {
+                    firstItem = false;
+                    return item;
+                }
+                return "," + item;
+            }
+        });
         return writer;
     }
     @Bean
-    public Job importUserJob(JobCompletionNotificationListener listener) {
+    public Job importUserJob(JobCompletionNotificationListener listener) throws IOException {
         return jobBuilderFactory.get("importUserJob")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
@@ -126,7 +141,7 @@ public class BatchConfiguration {
                 .build();
     }
     @Bean
-    public Step step2() {
+    public Step step2() throws IOException {
         return stepBuilderFactory.get("step2")
                 .<SqlTable, String> chunk(1)
                 .reader(createTableReader())
